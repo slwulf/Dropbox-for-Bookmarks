@@ -1,17 +1,20 @@
 <!doctype html>
-<style type="text/css">
-	#mainPopup {
-		padding: 10px;
-		height: 200px;
-		width: 400px;
-		font-family: Helvetica, Ubuntu, Arial, sans-serif;
-	}
-	h1 {
-		font-size: 2em;
-	}
-</style>
+<link rel="stylesheet" href="browser_action.min.css">
 
 <div id="mainPopup">
-<h1>Hello extensionizr!</h1>
-<p>To shut this popup down, edit the manifest file and remove the "default popup" key. To edit it, just edit ext/browser_action/browser_action.html. The CSS is there, too.</p>
+
+    <label for="title">Title<br/>
+        <input type="text" id="title" name="title" value="">
+    </label>
+
+    <label for="url">URL<br/>
+        <input type="text" id="url" name="url" value="">
+    </label>
+
+    <input type="submit" id="save" value="Add Bookmark">
+
+    <span class="status-display"></span>
+
 </div>
+
+<script src="browser_action.min.js"></script>

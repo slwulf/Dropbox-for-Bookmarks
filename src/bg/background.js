@@ -1,13 +1,14 @@
-// if you checked "fancy-settings" in extensionizr.com, uncomment this lines
+function keyGen(len) {
+    var text = '';
+    var charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
-// var settings = new Store("settings", {
-//     "sample_setting": "This is how you use Store.js to remember values"
-// });
+    for ( var z=0; z < len; z++) {
+        text += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
 
+    return text;
+}
 
-//example of using a message handler from the inject scripts
-chrome.extension.onMessage.addListener(
-  function(request, sender, sendResponse) {
-  	chrome.pageAction.show(sender.tab.id);
-    sendResponse();
-  });
+var settings = new Store("settings", {
+    "test": "This is a test."
+});
