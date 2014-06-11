@@ -27,3 +27,7 @@ As of the latest big commit, the extension does a few things:
 
 * Currently, the background script creates/sets the synced folder and that's it.
 * In future versions, it will handle syncing the folder in both directions.
+
+### Contributing
+
+I'm not looking for a lot of direct coding support right now, however I could use a good name for the project!
