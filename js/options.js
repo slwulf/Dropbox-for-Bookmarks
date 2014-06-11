@@ -1,5 +1,7 @@
 // Set background page for bg functions
-var bg = chrome.extension.getBackgroundPage();
+chrome.runtime.getBackgroundPage(function(bgPage){
+    bg = bgPage;
+});
 
 // Generate a randomized alphanum string by length
 function keyGen(len) {

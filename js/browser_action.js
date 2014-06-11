@@ -18,7 +18,9 @@ function addMark(user, url, title) {
 
 $(document).ready(function(){
 
-    bg = chrome.extension.getBackgroundPage();
+    chrome.runtime.getBackgroundPage(function(bgPage){
+        bg = bgPage;
+    });
 
     chrome.storage.sync.get('userKey', function(data){
         user_key = data.userKey;
