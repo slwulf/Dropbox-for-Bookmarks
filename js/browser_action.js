@@ -7,28 +7,21 @@ function addMark(user, url, title) {
 
     $.ajax({
         type: 'POST',
-        url: 'http://www.thatbrightrobot.com/dropmarks/dropmarks.php',
+        url: 'http://localhost:8888/dropmarks/dropmarks.php',
         data: data,
         dataType: 'json',
         success: function result(data) {
             console.log(data);
-        },
-        error: function result(data, XMLHttpRequest, errorThrown, textStatus) {
-            console.log(data);
-            console.log(errorThrown);
-            console.log(XMLHttpRequest);
-            console.log(textStatus);
         }
     });
 }
 
 $(document).ready(function(){
 
-    var bg = chrome.extension.getBackgroundPage();
+    bg = chrome.extension.getBackgroundPage();
 
     chrome.storage.sync.get('userKey', function(data){
         user_key = data.userKey;
-        console.log(user_key);
     });
 
     // First, get the bookmark metadata for the current tab.
@@ -41,54 +34,31 @@ $(document).ready(function(){
     });
 
     // Next, check for a Dropmarks folder.
-    chrome.bookmarks.getTree(function(search){
-        $dropmarks = false;
-        $dm_id = 0;
-
-        $children = search[0].children;
-        // Check if Dropmarks exists in any of the top level folders.
-        for (var i = 0; i < $children.length; i++) {
-            if ($children[i].title == 'Dropmarks') {
-                $dropmarks = true;
-                $dm_id = $children[i].id;
-            } else {
-                // If not, check if it's one level below.
-                $sub = $children[i].children;
-                for (var x = 0; x < $sub.length; x++) {
-                    if ($sub[x].title == 'Dropmarks') {
-                        $dropmarks = true;
-                        $dm_id = $sub[x].id;
-                    }
-                }
-            }
-        }
-
-        // If Dropmarks folder still can't be found, create it in "Other Bookmarks".
-        if ( $dropmarks !== true ) {
+    chrome.storage.sync.get('folder_id', function(data){
+        console.log(data.folder_id);
+        if ( data.folder_id == '' || ! data.folder_id ) {
             chrome.bookmarks.create({
                 'title': 'Dropmarks'
             }, function(newFolder){
-                $dm_id = newFolder.id;
+                $folder = newFolder.id;
+                chrome.storage.sync.set({
+                    'folder_id': newFolder.id
+                });
             });
+        } else {
+            $folder = data.folder_id;
         }
     });
 
     $('#save').click(function(){
         chrome.bookmarks.create({
-            'parentId': $dm_id,
+            'parentId': $folder,
             'title': $('#title').val(),
             'url': $('#url').val()
-        },/* This creates a json object of all links in the folder.
+        },
         function(newMark){
-            console.log('id: '+ newMark.parentId);
-            chrome.bookmarks.getChildren(newMark.parentId, function(results){
-                console.log(results);
-            });
-        }*/
-        function(newMark){
-            console.log('key: '+user_key+' url: '+newMark.url+' title: '+newMark.title);
             addMark(user_key, newMark.url, newMark.title);
-            console.log('Saved "'+ newMark.title +'" to Dropmarks folder.');
+            $('#mainPopup').append('Saved "'+ newMark.title +'" to Dropmarks folder.');
         });
     });
 

@@ -1,6 +1,7 @@
 *.sublime*
 Gruntfile.js
 package.json
+.DS_Store
 
 .sass-cache/
 tasks/

@@ -1,3 +1,4 @@
+// Generate a randomized alphanum string by length
 function keyGen(len) {
     var text = '';
     var charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -9,8 +10,8 @@ function keyGen(len) {
     return text;
 }
 
+// Save/Restore via chrome.storage.sync
 var key_field = document.getElementById('user_key');
-var reset = document.getElementById('key_reset');
 
 function save_options() {
     chrome.storage.sync.set({
@@ -26,12 +27,22 @@ function restore_options() {
 }
 
 document.addEventListener('DOMContentLoaded', function(){
+    // Try to restore options from chrome.storage.sync
     restore_options();
 
+    // If restore_options() didn't set savedKey, generate a userkey.
     if ( savedKey == '' ) {
         var user_key = keyGen(8);
         key_field.value = user_key;
         save_options();
         restore_options();
     }
+
+    // Grab user data from server
+    $('#grab_json').click(function(){
+        console.log('click!');
+        $.getJSON('http://localhost:8888/dropmarks/'+savedKey+'.json', function(data){
+            console.log(data);
+        });
+    });
 });
