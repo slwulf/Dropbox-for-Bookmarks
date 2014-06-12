@@ -3,7 +3,7 @@
 
 My partner and I wanted to sync our bookmarks for recipe sharing. There aren't a lot of good options for that. So we decided it'd be fun to build it. And here we are.
 
-**Note:** This is a work in progress and isn't meant for public use yet. The GitHub project does not include the server-side scripts yet, so don't download and install this expecting it to work. Once I have things a bit more organized, I'll include the server files. Eventually, the whole thing will be run as a service via a private server.
+> **Note:** This is a work in progress and isn't meant for public use yet. The GitHub project does not include the server-side scripts yet, so don't download and install this expecting it to work. Once I have things a bit more organized, I'll include the server files. Eventually, the whole thing will be run as a service via a private server.
 
 ### What it's supposed to do
 
