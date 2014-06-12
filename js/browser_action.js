@@ -37,19 +37,7 @@ $(document).ready(function(){
 
     // Next, check for a Dropmarks folder.
     chrome.storage.sync.get('folder_id', function(data){
-        console.log(data.folder_id);
-        if ( data.folder_id == '' || ! data.folder_id ) {
-            chrome.bookmarks.create({
-                'title': 'Dropmarks'
-            }, function(newFolder){
-                $folder = newFolder.id;
-                chrome.storage.sync.set({
-                    'folder_id': newFolder.id
-                });
-            });
-        } else {
-            $folder = data.folder_id;
-        }
+        $folder = data.folder_id;
     });
 
     $('#save').click(function(){
@@ -59,6 +47,7 @@ $(document).ready(function(){
             'url': $('#url').val()
         },
         function(newMark){
+            console.log(newMark);
             addMark(user_key, newMark.url, newMark.title);
             $('#mainPopup').append('Saved "'+ newMark.title +'" to Dropmarks folder.');
         });
