@@ -214,7 +214,6 @@ chrome.bookmarks.onRemoved.addListener(function(removed){
     // check removed id against dropmarks cache
     chrome.storage.local.get('cacheMarks',function(cache){
         $cache = cache['cacheMarks'];
-        console.log($cache);
 
         // Prep the json object to send to the server
         var remData = {};
@@ -222,14 +221,11 @@ chrome.bookmarks.onRemoved.addListener(function(removed){
             remData.user = $user_id;
 
         for (var i = 0; i < $cache.length; i++) {
-            console.log($cache[i][0], $removed);
             if ($cache[i][0] == $removed) {
                 // found the url in the cache
                 remData.url = $cache[i][1];
             }
         }
-
-        console.log(remData);
 
         // send it off to the server!
         $.ajax({
@@ -241,10 +237,9 @@ chrome.bookmarks.onRemoved.addListener(function(removed){
                 // now that the server is updated,
                 // refresh the local cache to reflect
                 // the removed mark
-                console.log(data);
-            },
-            error: function(jqXHR, textStatus, errorThrown){
-                console.log(textStatus, errorThrown);
+                chrome.runtime.getBackgroundPage(function(bg){
+                    bg.cacheMarks();
+                });
             }
         });
     });

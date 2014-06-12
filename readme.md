@@ -3,7 +3,7 @@
 
 My partner and I wanted to sync our bookmarks for recipe sharing. There aren't a lot of good options for that. So we decided it'd be fun to build it. And here we are.
 
-**Note:** This is a fun, learning project for me right now. Right now it's a work in progress, so bear with me as I work on this project in my spare time. Eventually I want it to be a publicly useable Chrome extension, but right now it's only good for me and my partner.
+**Note:** This is a work in progress and isn't meant for public use yet. The GitHub project does not include the server-side scripts yet, so don't download and install this expecting it to work. Once I have things a bit more organized, I'll include the server files. Eventually, the whole thing will be run as a service via a private server.
 
 ### What it's supposed to do
 
@@ -11,22 +11,22 @@ This extension is supposed to sync bookmarks in a specified folder to a server f
 
 ### What it actually does
 
-As of the latest big commit, the extension does a few things:
+As of version 0.2.0:
 
 ##### 1. Browser Action
 
-* Adds a bookmark to a Chrome Bookmarks folder called "Dropmarks", then pushes the URL and Title of the new bookmark to user_key.json on a remote server.
+* Adds a bookmark to a Chrome Bookmarks folder linked to the user's sync storage, then pushes the URL and Title of the new bookmark to user_key.json on a remote server.
 
-##### 2. Options page
+##### 2. Background Events
 
-* On first load, generates a random 8-character key to identify a particular user, machine, or whatever.
-* Options also allows users to change the key associated with their browser (currently only one user_key is allowed at a time).
-* Finally, users can pull missing "Dropmarks" from the server to local by clicking "Sync with server"
+* On Extension Install, generates a random 8-character user key to sync local Dropmarks to the server and creates the local Dropmarks folder in "Other Bookmarks".
+* Syncs local bookmarks with those on the server on startup.
+* Removes bookmarks from the server when they're removed locally.
 
-##### 3. Background script
+##### 3. Options Page
 
-* Currently, the background script creates/sets the synced folder and that's it.
-* In future versions, it will handle syncing the folder in both directions.
+* Displays your "unique" user key (note: user keys are not technically unique yet) which can be given to another user to sync a folder.
+* Replace this user key with another user's key and click "Update Key" to sync another user's bookmarks to yours.
 
 ### Contributing
 
