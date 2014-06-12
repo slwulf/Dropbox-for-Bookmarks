@@ -4,14 +4,27 @@
 	<title>Dropmarks Options</title>
 </head>
 <body>
+<style>
+    body {
+        padding: 2em;
+        font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    }
 
+    .content {
+        padding: 1em;
+        background: #ccc;
+        border-radius: 1em;
+        width: 200px;
+        margin: 0 auto;
+    }
+</style>
+<div class="content">
     <span>User key:</span><br />
     <input type="text" name="user_key" id="user_key" value="">
     <button id="update_key">Update Key</button>
     <p style="font-size: .8em;">(Enter another user's key and hit "Update Key" to sync with another user.)</p>
-    <button id="grab_json">Sync with Server</button>
 
     <script src="options.min.js"></script>
-
+</div>
 </body>
 </html>

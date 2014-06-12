@@ -135,6 +135,24 @@ function getFolder() {
 /* --- */
 
 
+// Function to backup local marks to cache removed URLs
+function cacheMarks() {
+    chrome.storage.sync.get('folder_id',function(folder){
+        var $id = folder.folder_id;
+        chrome.bookmarks.getChildren($id, function(results){
+            $cache = [];
+            for (var i = 0; i < results.length; i++) {
+                $cache.push([results[i].id, results[i].url]);
+            }
+            chrome.storage.sync.set({
+                'cacheMarks': $cache
+            });
+        });
+    });
+}
+/* --- */
+
+
 // extension init
 chrome.runtime.onInstalled.addListener(function(details){
     if (details.reason == 'install') {
@@ -146,10 +164,6 @@ chrome.runtime.onInstalled.addListener(function(details){
         alert('Welcome to Dropmarks!');
     } else {
         var thisVersion = chrome.runtime.getManifest().version;
-        $dropmarks = getFolder();
-        chrome.storage.sync.set({
-            'folder_id': $dropmarks
-        });
         alert('Updated from '+ details.previousVersion +' to '+ thisVersion +'!');
     }
 
@@ -157,33 +171,69 @@ chrome.runtime.onInstalled.addListener(function(details){
         $user_id = data.userKey;
     });
 });
+/* --- */
+
 
 // check for new bookmarks on startup
 chrome.runtime.onStartup.addListener(function(){
     chrome.storage.sync.get('userKey',function(data){
         syncMarks(data.userKey);
+        cacheMarks();
     });
 });
+/* --- */
+
 
 // if a bookmark is removed locally,
 // remove it from the server, too
 chrome.bookmarks.onRemoved.addListener(function(removed){
+    // grab current user key
     chrome.storage.sync.get('userKey',function(data){
         $user_id = data.userKey;
     });
 
-    var data = {};
-        data.request = 'rem_mark';
-        data.user = $user_id;
-        data.id = removed;
+    // check if the object removed was the folder
+    // and grab the current folder id
+    chrome.storage.sync.get('folder_id',function(data){
+        if (removed == data.folder_id) {
+            chrome.storage.sync.set({
+                'folder_id': ''
+            });
+            getFolder();
+            alert('Synced folder reset!');
+        }
+        $folder = data.folder_id;
+    });
 
+    // Prep the json object to send to the server
+    var remData = {};
+        remData.request = "rem_mark";
+        remData.user = $user_id;
+
+    // check removed id against dropmarks cache
+    chrome.storage.sync.get('cacheMarks',function(cache){
+        for (var i = cache.length - 1; i >= 0; i--) {
+            if (cache[i][0] == removed) {
+                // found the url in the cache
+                remData.url = cache[i][1];
+            }
+        }
+    });
+
+    // send it off to the server!
     $.ajax({
         type: 'POST',
         url: 'http://localhost:8888/dropmarks/dropmarks.php',
         data: data,
         dataType: 'json',
-        success: function result(data) {
-            console.log(data);
+        success: function(data) {
+            // now that the server is updated,
+            // refresh the local cache to reflect
+            // the removed mark
+            chrome.runtime.getBackgroundPage(function(){
+                cacheMarks();
+            });
         }
     });
 });
+/* --- */

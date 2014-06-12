@@ -1,9 +1,10 @@
-function addMark(user, url, title) {
+function addMark(user, url, title, id) {
     var data = {};
         data.request = 'add_mark';
         data.user = user;
         data.url = url;
         data.title = title;
+        data.id = id;
 
     $.ajax({
         type: 'POST',
@@ -47,8 +48,11 @@ $(document).ready(function(){
             'url': $('#url').val()
         },
         function(newMark){
-            console.log(newMark);
-            addMark(user_key, newMark.url, newMark.title);
+            addMark(user_key, newMark.url, newMark.title, newMark.id);
+            chrome.runtime.getBackgroundPage(function(bg){
+                bg.cacheMarks();
+            });
+            
             $('#mainPopup').append('Saved "'+ newMark.title +'" to Dropmarks folder.');
         });
     });
