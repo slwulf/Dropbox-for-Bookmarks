@@ -137,14 +137,17 @@ function getFolder() {
 
 // Function to backup local marks to cache removed URLs
 function cacheMarks() {
+    // First, clear the cache.
+    chrome.storage.local.remove('cacheMarks');
+
     chrome.storage.sync.get('folder_id',function(folder){
         var $id = folder.folder_id;
         chrome.bookmarks.getChildren($id, function(results){
-            $cache = [];
+            var $cache = [];
             for (var i = 0; i < results.length; i++) {
                 $cache.push([results[i].id, results[i].url]);
             }
-            chrome.storage.sync.set({
+            chrome.storage.local.set({
                 'cacheMarks': $cache
             });
         });
@@ -178,8 +181,9 @@ chrome.runtime.onInstalled.addListener(function(details){
 chrome.runtime.onStartup.addListener(function(){
     chrome.storage.sync.get('userKey',function(data){
         syncMarks(data.userKey);
-        cacheMarks();
     });
+
+    cacheMarks();
 });
 /* --- */
 
@@ -187,6 +191,8 @@ chrome.runtime.onStartup.addListener(function(){
 // if a bookmark is removed locally,
 // remove it from the server, too
 chrome.bookmarks.onRemoved.addListener(function(removed){
+    $removed = removed.toString();
+
     // grab current user key
     chrome.storage.sync.get('userKey',function(data){
         $user_id = data.userKey;
@@ -205,35 +211,42 @@ chrome.bookmarks.onRemoved.addListener(function(removed){
         $folder = data.folder_id;
     });
 
-    // Prep the json object to send to the server
-    var remData = {};
-        remData.request = "rem_mark";
-        remData.user = $user_id;
-
     // check removed id against dropmarks cache
-    chrome.storage.sync.get('cacheMarks',function(cache){
-        for (var i = cache.length - 1; i >= 0; i--) {
-            if (cache[i][0] == removed) {
+    chrome.storage.local.get('cacheMarks',function(cache){
+        $cache = cache['cacheMarks'];
+        console.log($cache);
+
+        // Prep the json object to send to the server
+        var remData = {};
+            remData.request = "rem_mark";
+            remData.user = $user_id;
+
+        for (var i = 0; i < $cache.length; i++) {
+            console.log($cache[i][0], $removed);
+            if ($cache[i][0] == $removed) {
                 // found the url in the cache
-                remData.url = cache[i][1];
+                remData.url = $cache[i][1];
             }
         }
-    });
 
-    // send it off to the server!
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:8888/dropmarks/dropmarks.php',
-        data: data,
-        dataType: 'json',
-        success: function(data) {
-            // now that the server is updated,
-            // refresh the local cache to reflect
-            // the removed mark
-            chrome.runtime.getBackgroundPage(function(){
-                cacheMarks();
-            });
-        }
+        console.log(remData);
+
+        // send it off to the server!
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8888/dropmarks/dropmarks.php',
+            data: remData,
+            dataType: 'json',
+            success: function(data) {
+                // now that the server is updated,
+                // refresh the local cache to reflect
+                // the removed mark
+                console.log(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                console.log(textStatus, errorThrown);
+            }
+        });
     });
 });
 /* --- */
