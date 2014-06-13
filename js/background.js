@@ -135,10 +135,21 @@ function getFolder() {
 /* --- */
 
 
+// function to refresh the local cache of bookmarks periodically
+function refreshCache() {
+    chrome.alarms.create('localCache', {
+        delayInMinutes: 5,
+        periodInMinutes: 5,
+    });
+}
+/* --- */
+
+
 // Function to backup local marks to cache removed URLs
 function cacheMarks() {
     // First, clear the cache.
     chrome.storage.local.remove('cacheMarks');
+    chrome.alarms.clearAll();
 
     chrome.storage.sync.get('folder_id',function(folder){
         var $id = folder.folder_id;
@@ -150,9 +161,24 @@ function cacheMarks() {
             chrome.storage.local.set({
                 'cacheMarks': $cache
             });
+            refreshCache();
         });
     });
 }
+/* --- */
+
+
+// chrome api hook to refresh cache
+chrome.alarms.onAlarm.addListener(function(alarm){
+    if (alarm.name == 'localCache') {
+        cacheMarks();
+        console.log('Cache refreshed.');
+        chrome.storage.sync.get('userKey',function(key){
+            syncMarks(key.userKey);
+            console.log('Bookmarks synced.');
+        });
+    }
+});
 /* --- */
 
 
@@ -184,6 +210,14 @@ chrome.runtime.onStartup.addListener(function(){
     });
 
     cacheMarks();
+});
+/* --- */
+
+/* log the local cache when it changes (dev testing)
+chrome.storage.onChanged.addListener(function(changes, namespace){
+    if (changes.cacheMarks) {
+        console.log(changes.cacheMarks.newValue);
+    }
 });
 /* --- */
 
