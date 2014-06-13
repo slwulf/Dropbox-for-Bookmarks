@@ -52,7 +52,7 @@ $(document).ready(function(){
             chrome.runtime.getBackgroundPage(function(bg){
                 bg.cacheMarks();
             });
-            
+
             $('#mainPopup').append('Saved "'+ newMark.title +'" to Dropmarks folder.');
         });
     });

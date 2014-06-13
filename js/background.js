@@ -48,7 +48,7 @@ function syncMarks(savedKey) {
 
     // Get remote data
     $.getJSON('http://localhost:8888/dropmarks/'+savedKey+'.json', function(rem){
-        for (var i = 0; i < rem.length; i++) {
+        for (var i in rem) {
             $remMarks.push([rem[i].url, rem[i].title]);
         }
 
