@@ -1,6 +1,6 @@
 {
   "name": "Dropmarks - Dropbox for Bookmarks",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "manifest_version": 2,
   "description": "Sync a folder of bookmarks across any number of users.",
   "homepage_url": "http://extensionizr.com",

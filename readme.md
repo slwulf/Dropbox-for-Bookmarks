@@ -11,7 +11,7 @@ This extension is supposed to sync bookmarks in a specified folder to a server f
 
 ### What it actually does
 
-As of version 0.2.0:
+As of version 0.2.2:
 
 ##### 1. Browser Action
 
@@ -22,6 +22,7 @@ As of version 0.2.0:
 * On Extension Install, generates a random 8-character user key to sync local Dropmarks to the server and creates the local Dropmarks folder in "Other Bookmarks".
 * Syncs local bookmarks with those on the server on startup.
 * Removes bookmarks from the server when they're removed locally.
+* Periodically checks server for new bookmarks and adds them.
 
 ##### 3. Options Page
 
